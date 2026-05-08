@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
       background: #1c1c1e;
       color: #fff;
-      padding: 16px 18px 12px;
+      padding: 14px 16px 12px;
       user-select: none;
       -webkit-user-select: none;
       -webkit-app-region: no-drag;
@@ -19,63 +19,91 @@
     .header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
+      gap: 7px;
+      margin-bottom: 4px;
     }
-    .header .icon { font-size: 20px; }
+    .header .icon { font-size: 18px; }
     .header .label {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
-      letter-spacing: -0.2px;
       color: #98989d;
     }
     .battery-row {
       display: flex;
       align-items: baseline;
       gap: 6px;
-      margin-bottom: 4px;
     }
     .battery-pct {
-      font-size: 36px;
+      font-size: 34px;
       font-weight: 700;
       letter-spacing: -1px;
       color: #fff;
     }
     .battery-status {
-      font-size: 13px;
+      font-size: 12px;
       color: #30d158;
       font-weight: 500;
     }
     .battery-status.charging { color: #30d158; }
     .battery-status.low { color: #ff453a; }
     .forecast {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #ffffffcc;
-      margin-bottom: 10px;
-    }
-    .bar-bg {
-      margin-top: 8px;
-      height: 4px;
-      background: #ffffff18;
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 1s ease;
-      background: #30d158;
-    }
-    .bar-fill.low { background: #ff453a; }
-    .bar-fill.medium { background: #ffd60a; }
-    .divider {
-      height: 1px;
-      background: #ffffff18;
-      margin: 10px 0 8px;
+      margin-bottom: 6px;
     }
 
-    /* Bottom row: label + gear */
+    /* Chart */
+    .chart-wrap {
+      margin: 4px 0 6px;
+      background: #ffffff08;
+      border-radius: 6px;
+      padding: 4px 2px;
+    }
+    .chart-label {
+      font-size: 9px;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+      padding-left: 4px;
+    }
+    canvas#sparkline { display: block; width: 100%; }
+
+    /* Stats grid */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .stat {
+      background: #ffffff08;
+      border-radius: 6px;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    .stat .val {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .stat .lbl {
+      font-size: 9px;
+      color: #8e8e93;
+      margin-top: 1px;
+    }
+    .stat .val.good { color: #30d158; }
+    .stat .val.warn { color: #ffd60a; }
+    .stat .val.bad { color: #ff453a; }
+
+    .divider {
+      height: 1px;
+      background: #ffffff14;
+      margin: 6px 0 8px;
+    }
+
+    /* Bottom row */
     .bottom-row {
       display: flex;
       align-items: center;
@@ -87,7 +115,7 @@
       letter-spacing: 0.5px;
     }
 
-    /* Gear + menu */
+    /* Gear */
     .gear-wrap { position: relative; }
     .gear-btn {
       background: none;
@@ -148,10 +176,26 @@
     <span class="battery-status" id="status"></span>
   </div>
 
-  <div class="forecast" id="forecast">Calculating...</div>
+  <div class="forecast" id="forecast">计算中...</div>
 
-  <div class="bar-bg">
-    <div class="bar-fill" id="bar" style="width: 0%"></div>
+  <div class="chart-wrap">
+    <div class="chart-label">📈 电量趋势（近 2 分钟）</div>
+    <canvas id="sparkline"></canvas>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="val" id="cycles">--</div>
+      <div class="lbl">循环次数</div>
+    </div>
+    <div class="stat">
+      <div class="val" id="healthPct">--</div>
+      <div class="lbl">电池健康</div>
+    </div>
+    <div class="stat">
+      <div class="val" id="condition">--</div>
+      <div class="lbl">电池状态</div>
+    </div>
   </div>
 
   <div class="divider"></div>

@@ -28,6 +28,40 @@ function getBatteryInfo() {
   }
 }
 
+function getBatteryHealth() {
+  try {
+    const output = execSync('system_profiler SPPowerDataType', { encoding: 'utf8' });
+
+    const cycleMatch = output.match(/Cycle Count[:\s]+(\d+)/i);
+    const cycles = cycleMatch ? parseInt(cycleMatch[1], 10) : null;
+
+    const conditionMatch = output.match(/Condition[:\s]+(\w+)/i);
+    const condition = conditionMatch ? conditionMatch[1] : 'Unknown';
+
+    const maxMatch = output.match(/Maximum Capacity[:\s]+(\d+)/i);
+    const maxCapacity = maxMatch ? parseInt(maxMatch[1], 10) : null;
+
+    // Get design capacity via ioreg
+    let designCapacity = null;
+    try {
+      const ioreg = execSync(
+        'ioreg -rn AppleSmartBattery | grep -i "DesignCapacity"',
+        { encoding: 'utf8' }
+      );
+      const dcMatch = ioreg.match(/"DesignCapacity"\s*=\s*(\d+)/);
+      if (dcMatch) designCapacity = parseInt(dcMatch[1], 10);
+    } catch {}
+
+    const healthPct = (maxCapacity && designCapacity)
+      ? Math.round((maxCapacity / designCapacity) * 100)
+      : null;
+
+    return { cycles, condition, maxCapacity, designCapacity, healthPct };
+  } catch {
+    return { cycles: null, condition: 'Unknown', maxCapacity: null, designCapacity: null, healthPct: null };
+  }
+}
+
 // ── Power usage estimation ───────────────────────────────────────
 
 let samples = [];
@@ -113,8 +147,8 @@ function createPopover() {
   const { width } = screen.getPrimaryDisplay().workAreaSize;
 
   popover = new BrowserWindow({
-    width: 240,
-    height: 175,
+    width: 260,
+    height: 340,
     show: false,
     frame: false,
     resizable: false,
@@ -157,11 +191,21 @@ function sendBatteryUpdate() {
   if (!popover || popover.isDestroyed()) return;
   const info = collectSample();
   const timeLeft = forecast(samples);
+  const health = getBatteryHealth();
+
+  // Send recent samples for chart (last 24 points = ~2 min)
+  const chartData = samples.slice(-24).map(s => ({
+    t: s.timestamp,
+    v: s.batteryLevel,
+  }));
+
   popover.webContents.send('battery-update', {
     level: info.batteryLevel,
     timeLeft,
     isCharging: info.isCharging,
     rawTime: info.rawTime,
+    health,
+    chartData,
   });
 }
 
