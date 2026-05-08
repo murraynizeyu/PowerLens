@@ -43,7 +43,7 @@ function collectSample() {
 }
 
 function forecast(samples) {
-  if (samples.length < 5) return 'Calculating...';
+  if (samples.length < 5) return '计算中...';
 
   let totalDrop = 0;
   let totalTime = 0;
@@ -56,7 +56,7 @@ function forecast(samples) {
     }
   }
 
-  if (totalTime === 0 || totalDrop === 0) return 'Calculating...';
+  if (totalTime === 0 || totalDrop === 0) return '计算中...';
 
   const drainRate = totalDrop / totalTime; // % per hour
   const current = samples[samples.length - 1].batteryLevel;
@@ -64,7 +64,7 @@ function forecast(samples) {
 
   const h = Math.floor(hoursLeft);
   const m = Math.floor((hoursLeft - h) * 60);
-  return `${h}h ${m}m left`;
+  return `剩余 ${h}小时${m}分钟`;
 }
 
 // ── Tray icon generation ─────────────────────────────────────────
@@ -114,7 +114,7 @@ function createPopover() {
 
   popover = new BrowserWindow({
     width: 240,
-    height: 160,
+    height: 175,
     show: false,
     frame: false,
     resizable: false,
@@ -164,6 +164,17 @@ function sendBatteryUpdate() {
     rawTime: info.rawTime,
   });
 }
+
+const { ipcMain } = require('electron');
+
+ipcMain.on('restart-app', () => {
+  app.relaunch();
+  app.exit(0);
+});
+
+ipcMain.on('quit-app', () => {
+  app.quit();
+});
 
 // ── App lifecycle ─────────────────────────────────────────────────
 

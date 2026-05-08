@@ -9,7 +9,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
       background: #1c1c1e;
       color: #fff;
-      padding: 16px 18px;
+      padding: 16px 18px 12px;
       user-select: none;
       -webkit-user-select: none;
       -webkit-app-region: no-drag;
@@ -28,7 +28,6 @@
       font-weight: 600;
       letter-spacing: -0.2px;
       color: #98989d;
-      text-transform: uppercase;
     }
     .battery-row {
       display: flex;
@@ -47,28 +46,13 @@
       color: #30d158;
       font-weight: 500;
     }
-    .battery-status.charging {
-      color: #30d158;
-    }
-    .battery-status.low {
-      color: #ff453a;
-    }
+    .battery-status.charging { color: #30d158; }
+    .battery-status.low { color: #ff453a; }
     .forecast {
       font-size: 16px;
       font-weight: 600;
       color: #ffffffcc;
       margin-bottom: 10px;
-    }
-    .divider {
-      height: 1px;
-      background: #ffffff18;
-      margin: 8px 0;
-    }
-    .footer {
-      font-size: 10px;
-      color: #8e8e93;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
     .bar-bg {
       margin-top: 8px;
@@ -83,11 +67,73 @@
       transition: width 1s ease;
       background: #30d158;
     }
-    .bar-fill.low {
-      background: #ff453a;
+    .bar-fill.low { background: #ff453a; }
+    .bar-fill.medium { background: #ffd60a; }
+    .divider {
+      height: 1px;
+      background: #ffffff18;
+      margin: 10px 0 8px;
     }
-    .bar-fill.medium {
-      background: #ffd60a;
+
+    /* Bottom row: label + gear */
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer {
+      font-size: 10px;
+      color: #8e8e93;
+      letter-spacing: 0.5px;
+    }
+
+    /* Gear + menu */
+    .gear-wrap { position: relative; }
+    .gear-btn {
+      background: none;
+      border: none;
+      color: #8e8e93;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .gear-btn:hover { background: #ffffff14; color: #fff; }
+    .menu-drop {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 6px;
+      background: #2c2c2e;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      min-width: 120px;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .menu-drop.open { display: block; }
+    .menu-item {
+      display: block;
+      width: 100%;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #fff;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.1s;
+    }
+    .menu-item:hover { background: #ffffff14; }
+    .menu-item.danger { color: #ff453a; }
+    .menu-sep {
+      height: 1px;
+      background: #ffffff12;
+      margin: 2px 0;
     }
   </style>
 </head>
@@ -109,7 +155,18 @@
   </div>
 
   <div class="divider"></div>
-  <div class="footer">Battery Forecast</div>
+
+  <div class="bottom-row">
+    <span class="footer">电量预测</span>
+    <div class="gear-wrap" id="gearWrap">
+      <button class="gear-btn" id="gearBtn">⚙</button>
+      <div class="menu-drop" id="menuDrop">
+        <button class="menu-item" id="restartBtn">🔄 重启</button>
+        <div class="menu-sep"></div>
+        <button class="menu-item danger" id="quitBtn">✕ 退出</button>
+      </div>
+    </div>
+  </div>
 
   <script src="renderer.js"></script>
 </body>
