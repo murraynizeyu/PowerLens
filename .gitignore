@@ -1,0 +1,15 @@
+# Swift/Xcode
+.build/
+DerivedData/
+*.xcodeproj
+*.xcworkspace
+Package.resolved
+*.swp
+*~
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# App bundle
+PowerLens.app/
