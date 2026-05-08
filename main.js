@@ -100,11 +100,16 @@ function createTrayIcon(level) {
 
 function createPopover() {
   if (popover) {
-    popover.close();
+    if (!popover.isDestroyed()) popover.close();
+    popover = null;
     return;
   }
 
-  const trayBounds = tray.getBounds();
+  try {
+    var trayBounds = tray.getBounds();
+  } catch {
+    return; // tray is gone, likely quitting
+  }
   const { width } = screen.getPrimaryDisplay().workAreaSize;
 
   popover = new BrowserWindow({
@@ -135,10 +140,14 @@ function createPopover() {
   });
 
   popover.on('blur', () => {
-    if (popover) {
+    if (popover && !popover.isDestroyed()) {
       popover.close();
-      popover = null;
     }
+    popover = null;
+  });
+
+  popover.on('closed', () => {
+    popover = null;
   });
 }
 
@@ -173,6 +182,7 @@ app.whenReady().then(() => {
 
   // Update every 5 seconds
   setInterval(() => {
+    if (!tray || tray.isDestroyed()) return;
     const info = collectSample();
     if (!info.isCharging) {
       tray.setTitle(`${Math.round(info.batteryLevel)}%`);
@@ -190,5 +200,5 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
-  if (popover) popover.close();
+  if (popover && !popover.isDestroyed()) popover.close();
 });
