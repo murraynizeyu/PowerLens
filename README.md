@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0-blue" alt="version">
+  <img src="https://img.shields.io/badge/version-2.0-9cf" alt="version">
   <img src="https://img.shields.io/badge/platform-macOS%2012%2B-orange" alt="platform">
-  <img src="https://img.shields.io/badge/Swift-5.7-FA7343?logo=swift" alt="swift">
+  <img src="https://img.shields.io/badge/Electron-33-47848F?logo=electron" alt="electron">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
 </p>
 
@@ -10,17 +10,20 @@
 
 ---
 
-PowerLens lives in your menu bar, quietly watching your battery and whispering how much time you have left before your Mac takes an unplanned nap. No bloat, no subscriptions, no "smart assistant" that just wants to sell you cloud storage — just a tiny Swift app that actually tells you something useful.
+PowerLens lives in your menu bar, quietly watching your battery and whispering how much time you have left before your Mac takes an unplanned nap. No bloat, no subscriptions, no "smart assistant" that just wants to sell you cloud storage — just a tiny app that actually tells you something useful.
+
+> **v2.0 is here!** Now powered by Electron. Yes, the README for v1 said we'd "pretend we didn't see" an Electron port suggestion. We saw it. We did it anyway. Sometimes you just need a 98MB DMG to display two numbers. That's called progress.
 
 <img src="https://img.shields.io/badge/status-judging%20your%20battery-yellow" alt="status">
 
 ## ✨ Features
 
-- **Real battery level** — reads directly from IOKit. No guesswork, no lies.
-- **Time remaining forecast** — samples your power draw every 5 seconds and estimates how long until zero. Like a weather forecast, but for your laptop.
+- **Real battery level** — reads from `pmset`. System truth, zero fluff.
+- **Time remaining forecast** — samples your battery drain every 5 seconds, crunches the trend, and estimates how long until darkness. Like a weather forecast, but for your laptop.
 - **Menu bar native** — one click. That's it. You have work to do.
-- **Zero dependencies** — just SwiftUI, AppKit, and a dream. The binary weighs less than your average JPEG.
-- **Privacy-first** — doesn't phone home. Doesn't even know what the internet is.
+- **Smart drain estimation** — tracks actual percentage drop over time instead of guessing power draw. No more `Double.random(in: 3...8)`.
+- **Visual battery bar** — color-coded bar (green / yellow / red) because words are hard.
+- **Privacy-first** — doesn't phone home. Doesn't even know what `fetch()` is.
 
 ## 🚀 Install
 
@@ -30,58 +33,61 @@ PowerLens lives in your menu bar, quietly watching your battery and whispering h
 # Done. That's literally it.
 ```
 
-Or build from source:
+Or run from source:
 
 ```bash
 git clone https://github.com/murraynizeyu/PowerLens.git
 cd PowerLens
-bash build.sh
-open PowerLens.app
+npm install
+npm start
 ```
 
 ## 🧠 How It Works
 
 ```
 Every 5 seconds:
-  📊 Sample battery level (IOKit)
-  ⚡ Estimate power draw (mW)
-  🧮 Average your usage history
-  ⏳ Project remaining runtime
-  🔔 Update menu bar
+  📊 Poll battery via pmset -g batt
+  📈 Record % drop over time
+  🧮 Calculate drain rate (% per hour)
+  ⏳ Divide remaining % by drain rate
+  🔔 Update tray + popover
 ```
 
-That "AI Power Forecast" badge in the UI? It's doing simple averaging over your recent samples. Turns out you don't need a neural network to divide battery capacity by power draw. But "AI" sounds cooler, and we're not above a little marketing.
+The forecast is simple math: if you dropped 5% in 30 minutes, you'll hit zero in roughly `(remaining / 5) * 30` minutes. No neural network required.
 
 ## 🏗 Architecture
 
 ```
-Sources/PowerLens/
-├── AppMain.swift        # NSStatusBar + NSPopover setup
-├── PowerManager.swift   # IOKit sampling + forecasting logic
-├── PowerModel.swift     # Data model
-└── MenuBarView.swift    # SwiftUI popover view
+├── main.js          # Electron main process — tray, popover, pmset polling
+├── preload.js       # IPC bridge
+├── renderer/
+│   ├── index.html   # Popover UI (dark mode, naturally)
+│   ├── renderer.js  # UI update logic
+│   └── style.css    # (inlined — it's a tiny app)
+├── Sources/         # v1.x Swift source (preserved for nostalgia)
+│   └── PowerLens/
+└── package.json     # v2.0 Electron build config
 ```
 
-Everything in ~200 lines of Swift. Readable in one coffee break.
+The Swift source is kept in `Sources/` for anyone who wants to compare the 152KB native binary to the 98MB Electron one. For historical purposes. For science.
 
-## 📦 Release Naming
+## 📦 Release History
 
-Follows Apple-style semantic versioning:
-
-| Tag   | DMG                  | What changed       |
-|-------|----------------------|--------------------|
-| v1.0  | `PowerLens-1.0.dmg` | Initial release 🎉 |
+| Tag   | DMG                    | Engine   | Size  | Notes                        |
+|-------|------------------------|----------|-------|------------------------------|
+| v2.0  | `PowerLens-2.0.0.dmg` | Electron | 98MB  | We embraced the bloat 🎉     |
+| v1.0  | `PowerLens-1.0.dmg`   | Swift    | 56KB  | The pure, innocent version   |
 
 ## 🤝 Contributing
 
-Found a bug? Have a feature idea? PRs are welcome. Fair warning: if you suggest turning this into an Electron app, we will respectfully pretend we didn't see it.
+Found a bug? Have a feature idea? PRs are welcome. Suggestions to port back to Swift will be met with a thousand-yard stare.
 
 ## 📜 License
 
-MIT — do whatever you want. If PowerLens saves your presentation from a dead battery, a GitHub star is appreciated but not legally required.
+MIT — do whatever you want. If PowerLens saves your presentation from a dead battery, a GitHub star is appreciated but not legally required. If the 98MB download annoys you, there's always v1.0.
 
 ---
 
 <p align="center">
-  <sub>Built with ☕ and the quiet desperation of watching a MacBook hit 5% in a meeting.</sub>
+  <sub>Built with ☕, Electron, and the quiet desperation of watching a MacBook hit 5% in a meeting.</sub>
 </p>

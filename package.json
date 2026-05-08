@@ -1,0 +1,31 @@
+{
+  "name": "powerlens",
+  "version": "2.0.0",
+  "description": "Your Mac's battery has a story to tell. Are you listening?",
+  "author": "murraynizeyu",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac",
+    "dist": "electron-builder --mac --publish never"
+  },
+  "build": {
+    "appId": "com.powerlens.app",
+    "productName": "PowerLens",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg",
+      "artifactName": "PowerLens-${version}.${ext}"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: #1c1c1e;
+      color: #fff;
+      padding: 16px 18px;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-app-region: no-drag;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .header .icon { font-size: 20px; }
+    .header .label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      color: #98989d;
+      text-transform: uppercase;
+    }
+    .battery-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .battery-pct {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: #fff;
+    }
+    .battery-status {
+      font-size: 13px;
+      color: #30d158;
+      font-weight: 500;
+    }
+    .battery-status.charging {
+      color: #30d158;
+    }
+    .battery-status.low {
+      color: #ff453a;
+    }
+    .forecast {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffffcc;
+      margin-bottom: 10px;
+    }
+    .divider {
+      height: 1px;
+      background: #ffffff18;
+      margin: 8px 0;
+    }
+    .footer {
+      font-size: 10px;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .bar-bg {
+      margin-top: 8px;
+      height: 4px;
+      background: #ffffff18;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s ease;
+      background: #30d158;
+    }
+    .bar-fill.low {
+      background: #ff453a;
+    }
+    .bar-fill.medium {
+      background: #ffd60a;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="icon">🔋</span>
+    <span class="label">PowerLens</span>
+  </div>
+
+  <div class="battery-row">
+    <span class="battery-pct" id="pct">--%</span>
+    <span class="battery-status" id="status"></span>
+  </div>
+
+  <div class="forecast" id="forecast">Calculating...</div>
+
+  <div class="bar-bg">
+    <div class="bar-fill" id="bar" style="width: 0%"></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="footer">Battery Forecast</div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

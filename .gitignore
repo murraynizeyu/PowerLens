@@ -1,3 +1,11 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+PowerLens.app/
+*.dmg
+
 # Swift/Xcode
 .build/
 DerivedData/
@@ -10,7 +18,3 @@ Package.resolved
 # macOS
 .DS_Store
 Thumbs.db
-
-# Build artifacts
-PowerLens.app/
-*.dmg
