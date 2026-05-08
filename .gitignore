@@ -11,5 +11,6 @@ Package.resolved
 .DS_Store
 Thumbs.db
 
-# App bundle
+# Build artifacts
 PowerLens.app/
+*.dmg
